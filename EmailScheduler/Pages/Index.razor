@@ -1,0 +1,245 @@
+﻿@page "/"
+@inject EmailScheduler.EmailServices.IEmailService EmailService
+
+@using EmailScheduler.Models
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Schedule
+@using System.Timers
+
+<div class="control-container">
+    <div class="dialog-control">
+        <SfDialog @ref="DialogRef" Width="250px" Height="120px" CssClass="email-status-dialog" IsModal="true" @bind-Visible="Visibility" ShowCloseIcon="@ShowCloseIcon">
+            <DialogAnimationSettings Effect="@DialogEffect.Fade"></DialogAnimationSettings>
+            <DialogTemplates>
+                <Header>Email Status</Header>
+                <Content>
+                    <div class="email-container">
+                        <div class="email-logo">
+                            @{
+                                switch (EmailResponse)
+                                {
+                                    case "success":
+                                        <img src="/images/status/success.png" alt="logo" />
+                                        break;
+                                    case "failure":
+                                        <img src="/images/status/failure.png" alt="logo" />
+                                        break;
+                                    default:
+                                        <img src="/images/status/warning.png" alt="logo" />
+                                        break;
+                                }
+                            }
+                        </div>
+                        <div class="email-status">
+                            @{
+                                switch (EmailResponse)
+                                {
+                                    case "success":
+                                        <div class="email-success">Email sent successfully..!</div>
+                                        break;
+                                    case "failure":
+                                        <div class="email-failure">Email not sent.</div>
+                                        break;
+                                    default:
+                                        <div class="email-info">Processing...</div>
+                                        break;
+                                }
+                            }
+                        </div>
+                        <div></div>
+                    </div>
+                </Content>
+            </DialogTemplates>
+            <DialogEvents Closed="@(()=> { Visibility = false; ShowCloseIcon = false; EmailResponse = string.Empty; })"></DialogEvents>
+        </SfDialog>
+    </div>
+    <div class="toast-control">
+        <SfToast @ref="ToastRef" CssClass="e-schedule-reminder e-toast-info" NewestOnTop="true" ShowCloseButton="true" Target=".e-schedule" Timeout="999999999">
+            <ToastAnimationSettings>
+                <ToastShowAnimationSettings Effect="ToastEffect.SlideRightIn"></ToastShowAnimationSettings>
+                <ToastHideAnimationSettings Effect="ToastEffect.SlideRightOut"></ToastHideAnimationSettings>
+            </ToastAnimationSettings>
+            <ToastPosition X="Right" Y="Top"></ToastPosition>
+            <ToastTemplates>
+                <Template>
+                    <div class="e-toast-template e-toast-info">
+                        <div class="e-custom-toast">
+                            <div class="e-toast-icon e-icons e-schedule-meeting-icon"></div>
+                            <div class="e-avatar e-avatar-xsmall e-avatar-circle e-toast-avatar">
+                                @{
+                                    if (EventData.EmployeeId != null)
+                                    {
+                                        <img class="image" src="/images/status/success.png" alt="avatar" />
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="e-toast-message">
+                            <div class="e-toast-title">@EventData.Subject</div>
+                            <div class="e-toast-content">@(EventData.StartTime.ToShortTimeString() + " - " + EventData.EndTime.ToShortTimeString())</div>
+                        </div>
+                    </div>
+                </Template>
+            </ToastTemplates>
+            <ToastEvents Created="OnToastCreated"></ToastEvents>
+        </SfToast>
+    </div>
+    <div class="schedule-control">
+        <SfSchedule @ref="ScheduleRef" TValue="EventModel" Height="500px">
+            <ScheduleGroup EnableCompactView="false" Resources="@GroupData"></ScheduleGroup>
+            <ScheduleResources>
+                <ScheduleResource TItem="ResourceModel" TValue="int[]" DataSource="@ResourceData" Field="EmployeeId" Title="Employee Name" Name="Employees" TextField="EmployeeName" IdField="EmployeeId" ColorField="EmployeeColor" AllowMultiple="true"></ScheduleResource>
+            </ScheduleResources>
+            <ScheduleEventSettings DataSource="@DataSource"></ScheduleEventSettings>
+            <ScheduleEvents TValue="EventModel" ActionCompleted="OnActionCompleted"></ScheduleEvents>
+        </SfSchedule>
+    </div>
+</div>
+
+<style>
+    .email-status-dialog .email-container {
+        display: flex;
+    }
+
+        .email-status-dialog .email-container .email-logo,
+        .email-status-dialog .email-container .email-status {
+            line-height: 40px;
+            padding-right: 10px;
+        }
+
+            .email-status-dialog .email-container .email-logo img {
+                width: 20px;
+            }
+
+            .email-status-dialog .email-container .email-status .email-info {
+                animation: blinker 1.5s linear infinite;
+            }
+
+    @@keyframes blinker {
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .e-toast .e-schedule-reminder .e-toast-template {
+        display: flex;
+    }
+
+    .e-toast .e-schedule-reminder .e-custom-toast {
+        display: inline-grid;
+    }
+
+    .e-toast .e-schedule-reminder .e-schedule-meeting-icon::before {
+        content: "\e763";
+        font-size: 20px;
+    }
+
+    .e-toast .e-schedule-reminder .e-toast-avatar {
+        margin-top: 14px;
+    }
+</style>
+
+@code{
+    SfDialog DialogRef;
+    SfToast ToastRef;
+    SfSchedule<EventModel> ScheduleRef;
+
+    private class ResourceModel
+    {
+        public string EmployeeName { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeColor { get; set; }
+        public string EmployeeEmail { get; set; }
+    }
+
+    private EventModel EventData { get; set; }
+    private bool Visibility { get; set; } = false;
+    private bool ShowCloseIcon { get; set; } = false;
+    private string EmailResponse { get; set; } = string.Empty;
+    private string[] GroupData { get; set; } = new string[] { "Employees" };
+    private List<ResourceModel> ResourceData { get; set; } = new List<ResourceModel> {
+        new ResourceModel { EmployeeId = 1, EmployeeName = "Employee 1", EmployeeColor = "#EA7A57", EmployeeEmail = "xxxxxxxxxx@outlook.com"  },
+        new ResourceModel { EmployeeId = 2, EmployeeName = "Employee 2", EmployeeColor = "#357cd2", EmployeeEmail = "xxxxxxxxxx@gmail.com"  },
+        new ResourceModel { EmployeeId = 3, EmployeeName = "Employee 3", EmployeeColor = "#7fa900", EmployeeEmail = "xxxxxxxxxx@yahoo.com" }
+    };
+    private List<EventModel> DataSource = GenerateEvents();
+
+    private void OnToastCreated()
+    {
+        Timer timer = new Timer(60000);
+        timer.Elapsed += new ElapsedEventHandler(async (object sender, ElapsedEventArgs e) =>
+        {
+            List<EventModel> eventDatas = ScheduleRef.GetCurrentViewEvents();
+            int AlertBeforeMinutes = 5;
+            DateTime CurrentTime = DateFormat(DateTime.Now);
+            foreach (EventModel eventData in eventDatas)
+            {
+                DateTime StartTime = DateFormat(eventData.StartTime);
+                if (DateTime.Compare(CurrentTime, StartTime.AddMinutes(-AlertBeforeMinutes)) == 0)
+                {
+                    EventData = eventData;
+                    await InvokeAsync(async () => await ToastRef.Show());
+                }
+            }
+        });
+        timer.Enabled = true;
+    }
+
+    private DateTime DateFormat(DateTime date)
+    {
+        return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, 0);
+    }
+
+    private static List<EventModel> GenerateEvents()
+    {
+        DateTime date1 = DateTime.Now;
+        DateTime startDate = new DateTime(date1.Year, date1.Month, date1.Day, date1.Hour, date1.Minute, 0).AddMinutes(6);
+        DateTime endDate = new DateTime(startDate.Ticks).AddHours(2);
+        List<EventModel> collections = new List<EventModel>() {
+            new EventModel { Id = 1, Subject = "Testing", StartTime = startDate, EndTime = endDate, EmployeeId = 1 },
+            new EventModel { Id = 2, Subject = "Meeting", StartTime = startDate.AddHours(-2), EndTime = endDate.AddHours(-2), EmployeeId = 2 },
+            new EventModel { Id = 3, Subject = "Conference", StartTime = startDate.AddHours(1), EndTime = endDate.AddHours(1), EmployeeId = 3 },
+        };
+        return collections;
+    }
+
+    private async void OnActionCompleted(ActionEventArgs<EventModel> args)
+    {
+        if (args.ActionType == ActionType.EventCreate || args.ActionType == ActionType.EventChange || args.ActionType == ActionType.EventRemove)
+        {
+            Visibility = true;
+            List<EventModel> added = args.AddedRecords ?? new List<EventModel>();
+            List<EventModel> changed = args.ChangedRecords ?? new List<EventModel>();
+            List<EventModel> deleted = args.DeletedRecords ?? new List<EventModel>();
+            List<EventModel> datas = added.Concat(changed).Concat(deleted).ToList();
+            List<string> toEmail = new List<string>();
+            foreach (EventModel data in datas)
+            {
+                string email = ResourceData.Where(e => e.EmployeeId == data.EmployeeId).FirstOrDefault().EmployeeEmail;
+                if (EmailService.IsValidEmail(email))
+                {
+                    toEmail.Add(email);
+                }
+            }
+            toEmail = toEmail.Distinct().ToList();
+            string Title = string.Empty;
+            switch (args.ActionType)
+            {
+                case ActionType.EventCreate:
+                    Title = "New Event Scheduled";
+                    break;
+                case ActionType.EventChange:
+                    Title = "Scheduled Event Updated";
+                    break;
+                case ActionType.EventRemove:
+                    Title = "Scheduled Event Removed";
+                    break;
+            }
+            EmailResponse = await EmailService.SendEmailAsync(toEmail, Title, datas[0]);
+            ShowCloseIcon = true;
+            StateHasChanged();
+        }
+    }
+
+}
