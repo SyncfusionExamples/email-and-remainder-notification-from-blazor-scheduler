@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30615.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailScheduler", "EmailScheduler\EmailScheduler.csproj", "{BADC005F-391E-425F-9F16-92D2DDBC0E04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BADC005F-391E-425F-9F16-92D2DDBC0E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BADC005F-391E-425F-9F16-92D2DDBC0E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BADC005F-391E-425F-9F16-92D2DDBC0E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BADC005F-391E-425F-9F16-92D2DDBC0E04}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D9A6AFB-9B38-4D58-A8BD-CA5BB8524211}
+	EndGlobalSection
+EndGlobal
