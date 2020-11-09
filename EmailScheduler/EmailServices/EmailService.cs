@@ -1,4 +1,5 @@
 ﻿using EmailScheduler.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -86,6 +87,7 @@ namespace EmailScheduler.EmailServices
             HTMLBody = HTMLBody.Replace("###EVENTEND###", Data.EndTime.ToString());
             HTMLBody = HTMLBody.Replace("###EVENTLOCATION###", Data.Location ?? "NA");
             HTMLBody = HTMLBody.Replace("###EVENTDETAILS###", Data.Description ?? "NA");
+            HTMLBody = HTMLBody.Replace("###CURRENTYEAR###", DateTime.Now.Year.ToString());
 
             return HTMLBody;
         }
