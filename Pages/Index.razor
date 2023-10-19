@@ -140,7 +140,7 @@
     }
 </style>
 
-@code{
+@code {
     SfDialog DialogRef;
     SfToast ToastRef;
     SfSchedule<EventModel> ScheduleRef;
@@ -179,7 +179,7 @@
                 if (DateTime.Compare(CurrentTime, StartTime.AddMinutes(-AlertBeforeMinutes)) == 0)
                 {
                     EventData = eventData;
-                    await InvokeAsync(async () => await ToastRef.Show());
+                    await InvokeAsync(async () => await ToastRef.ShowAsync());
                 }
             }
         });
