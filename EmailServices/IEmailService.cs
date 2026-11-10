@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EmailScheduler.EmailServices
 {
-    interface IEmailService
+    public interface IEmailService
     {
         Task<string> SendEmailAsync(string ToEmailName, string Subject, EventModel Data);
         Task<string> SendEmailAsync(List<string> ToEmailNames, string Subject, EventModel Data);
