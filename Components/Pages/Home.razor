@@ -237,9 +237,17 @@
                     Title = "Scheduled Event Removed";
                     break;
             }
-            EmailResponse = await EmailService.SendEmailAsync(toEmail, Title, datas[0]);
+            try
+            {
+                EmailResponse = await EmailService.SendEmailAsync(toEmail, Title, datas[0]);
+            }
+            catch (Exception)
+            {
+                // SMTP failures (e.g. invalid credentials) are reported through the "failure" status in the dialog.
+                EmailResponse = "failure";
+            }
             ShowCloseIcon = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
