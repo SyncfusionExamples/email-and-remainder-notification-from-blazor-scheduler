@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syncfusion.Blazor.Notifications" Version="23.1.41" />
-    <PackageReference Include="Syncfusion.Blazor.Popups" Version="23.1.41" />
-    <PackageReference Include="Syncfusion.Blazor.Schedule" Version="23.1.41" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="23.1.41" />
+    <PackageReference Include="Syncfusion.Blazor.Notifications" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.Blazor.Schedule" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="35.1.43" />
   </ItemGroup>
 
 </Project>
